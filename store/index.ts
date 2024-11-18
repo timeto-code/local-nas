@@ -55,10 +55,10 @@ export const useDeleteFileStore = create<DeleteFileStore>((set) => ({
 type SearchFileStore = {
   search: string;
   type: FileCategory;
-  activedType: FileCategory;
+  activatedLabel: string;
   setSearch: (search: string) => void;
   setType: (type: FileCategory) => void;
-  setActivedType: (type: FileCategory) => void;
+  setActivatedLabel: (label: string) => void;
 };
 
 export const useSearchFileStore = create<SearchFileStore>((set) => ({
@@ -66,8 +66,8 @@ export const useSearchFileStore = create<SearchFileStore>((set) => ({
   setSearch: (search) => set(() => ({ search })),
   type: category.all,
   setType: (type) => set(() => ({ type })),
-  activedType: category.all,
-  setActivedType: (type) => set(() => ({ activedType: type })),
+  activatedLabel: '',
+  setActivatedLabel: (label) => set(() => ({ activatedLabel: label })),
 }));
 
 type ToastStore = {
@@ -95,9 +95,9 @@ type RowStore = {
 
 export const useRowStore = create<RowStore>((set) => ({
   deletedRows: new Set(),
-  addDeletedRow: (row) => set((state) => ({ deletedRows: new Set([...state.deletedRows, row]) })),
+  addDeletedRow: (row) => set((state) => ({ deletedRows: new Set([...Array.from(state.deletedRows), row]) })),
   rows: new Set(),
-  addRow: (row) => set((state) => ({ rows: new Set([...state.rows, row]) })),
+  addRow: (row) => set((state) => ({ rows: new Set([...Array.from(state.deletedRows), row]) })),
   removeRow: (row) =>
     set((state) => {
       state.rows.delete(row);
@@ -123,7 +123,8 @@ export const useFileListStore = create<FileListStore>((set) => ({
       const extention = file.name.split('.').pop()!;
       const types = fileType[useSearchFileStore.getState().type];
 
-      if (types.includes(extention)) {
+      const label = useSearchFileStore.getState().activatedLabel;
+      if (types.includes(extention) || !label) {
         return { files: [file, ...state.files] };
       }
 

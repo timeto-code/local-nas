@@ -1,4 +1,4 @@
-import { TransferFile } from '@/module/uploader';
+import { TransferFile } from '@/modules/uploader';
 import { create } from 'zustand';
 
 type UploaderStore = {
