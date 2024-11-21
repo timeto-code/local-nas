@@ -13,32 +13,6 @@ export const msg = {
 } as const;
 
 export class Logger {
-  /* ------ without background color ------ */
-  // green: \u001b[32m
-  // console.log("\u001b[32m%s\u001b[0m", "Hello, world!");
-
-  // blue: \u001b[34m
-  // console.log("\u001b[34m%s\u001b[0m", "Hello, world!");
-
-  // yellow: \u001b[33m
-  // console.log("\u001b[33m%s\u001b[0m", "Hello, world!");
-
-  // red: \u001b[31m
-  // console.log("\u001b[31m%s\u001b[0m", "Hello, world!");
-
-  /* ------ with background color ------ */
-  // green: \u001b[42m
-  // console.log("\u001b[42m%s\u001b[0m", "Hello, world!");
-
-  // blue: \u001b[44m
-  // console.log("\u001b[44m%s\u001b[0m", "Hello, world!");
-
-  // yellow: \u001b[43m
-  // console.log("\u001b[43m%s\u001b[0m", "Hello, world!");
-
-  // red: \u001b[41m
-  // console.log("\u001b[41m%s\u001b[0m", "Hello, world!");
-
   static error<T>(error: T) {
     console.log(`\u001b[31m${new Date().toLocaleTimeString()} [ERROR]\u001b[0m`, error);
   }

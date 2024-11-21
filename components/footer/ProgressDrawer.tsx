@@ -14,7 +14,10 @@ import ProgressBar from '../ProgressBar';
 const Label = ({ transferFile }: { transferFile: TransferFile }) => {
   return (
     <div className="flex items-end justify-between space-x-4">
-      <p className={`mt-1 truncate text-sm ${transferFile.status === 'failure' && 'text-failed'}`}>
+      <p
+        className={`mt-1 truncate text-sm ${transferFile.status === 'failure' && 'text-failed'}`}
+        title={transferFile.file.name}
+      >
         {transferFile.file.name}
       </p>
 

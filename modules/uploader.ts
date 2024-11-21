@@ -223,7 +223,6 @@ export class Uploader extends EventTarget {
   }
 
   destroy(): void {
-    console.log(`destroy`);
     Uploader.isClosed = true;
     this.#filePool.clear();
     this.#chunkPool.length = 0;

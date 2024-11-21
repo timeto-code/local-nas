@@ -67,8 +67,6 @@ export const POST = async (req: NextRequest) => {
       }
     }
 
-    console.log(`chunk_${index} loaded: ${loaded}`);
-
     return createJsonResponse({ code: 0, message: { index, loaded } });
   } catch (error) {
     Logger.error(error);
