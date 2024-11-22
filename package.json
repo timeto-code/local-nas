@@ -1,11 +1,13 @@
 {
   "name": "local-nas",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "private": true,
+  "type": "module",
   "scripts": {
     "dev": "next dev -p 80",
     "build": "next build",
     "start": "next start -p 3001",
+    "test": "tsx ./test/test.build.ts",
     "lint": "next lint"
   },
   "dependencies": {
@@ -27,6 +29,7 @@
     "prettier": "^3.3.3",
     "prettier-plugin-tailwindcss": "^0.6.8",
     "tailwindcss": "^3.4.1",
+    "tsx": "^4.19.2",
     "typescript": "^5"
   }
 }
