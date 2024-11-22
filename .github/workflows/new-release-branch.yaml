@@ -39,6 +39,7 @@ jobs:
           git checkout -b ${{ inputs.branch_name }}
           sed -i -e 's/"version": ".*"/"version": "${{ inputs.package_version }}"/g' package.json
           npm ci
+          cat package.json
           npm install # update package-lock.json to ensure the version bump is included
           git diff
           git add package.json package-lock.json
