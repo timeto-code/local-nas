@@ -1,0 +1,50 @@
+name: New Release Branch
+
+on:
+  workflow_dispatch:
+    inputs:
+      branch_name:
+        description: Release branch name to create
+        required: true
+        type: string
+      package_version:
+        description: Release package version
+        required: true
+        type: string
+
+run-name: ${{ github.workflow }}
+
+# Ensure scripts are run with pipefail. See:
+# https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#exit-codes-and-error-action-preference
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          filter: blob:none # https://github.blog/2020-12-21-get-up-to-speed-with-partial-clone-and-shallow-clone/
+          fetch-depth: 0 # Default is 1; need to set to 0 to get the benefits of blob:none.
+          token: ${{ secrets.ACCESS_TOKEN }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 'lts/*'
+          cache: 'npm'
+
+      - run: |
+          git checkout -b ${{ inputs.branch_name }}
+          sed -i -e 's/"version": ".*"/"version": "${{ inputs.package_version }}"/g' package.json
+          npm ci
+          npm install # update package-lock.json to ensure the version bump is included
+          git diff
+          git add package.json package-lock.json
+          git config user.email "timeto-bot@origin.com"
+          git config user.name "timeto-bot"
+          git commit -m 'Bump version to ${{ inputs.package_version }}'
+          git tag v${{ inputs.package_version }}
+          git push --set-upstream origin ${{ inputs.branch_name }}
+          git push origin v${{ inputs.package_version }}
