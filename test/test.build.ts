@@ -12,7 +12,7 @@ function debug(message: string) {
 }
 
 function errorLog(message: string) {
-  process.stdout.write(`\x1b[38;2;220;0;78m${message}\x1b[0m\n`);
+  process.stdout.write(`👾 \x1b[38;2;220;0;78m${message}\x1b[0m\n`);
 }
 
 async function execCommand(command: string, options = {}) {
