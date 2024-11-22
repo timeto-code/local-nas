@@ -29,8 +29,10 @@ jobs:
 
       - name: clean and pack artifacts
         run: |
-          tar -czf app.tgz .next public shared package.json package-lock.json README.md
-          zip -r app.zip .next public shared package.json package-lock.json README.md
+          VERSION=$(echo "${{ github.ref }}" | sed 's/refs\/tags\/v//') 
+          tar -czf app-${VERSION}.tgz .next public shared package.json package-lock.json README.md
+          zip -r app-${VERSION}.zip .next public shared package.json package-lock.json README.md
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
 
       - uses: actions/create-release@v1
         id: create_release
@@ -47,8 +49,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.ACCESS_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./app.tgz
-          asset_name: app.tgz
+          asset_path: ./app-${{ env.VERSION }}.tgz
+          asset_name: app-${{ env.VERSION }}.tgz
           asset_content_type: application/gzip
 
       - uses: actions/upload-release-asset@v1
@@ -56,6 +58,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.ACCESS_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./app.zip
-          asset_name: app.zip
+          asset_path: ./app-${{ env.VERSION }}.zip
+          asset_name: app-${{ env.VERSION }}.zip
           asset_content_type: application/zip
