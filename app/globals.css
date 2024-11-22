@@ -5,6 +5,17 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
+
+  --hover-background: #f1f1f1;
+  --button-hover-background: #d9d9d9;
+  --upload-button-background: #e6e6e6;
+  --confirmation-background: rgb(0, 0, 0, 0.6);
+
+  --failed: #dc2626;
+  --failed-hover: #c52020;
+  --warning: #f59e0b;
+  --success: #22c55e;
+  --processing: #6da2f8;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -14,14 +25,24 @@
   }
 }
 
-body {
-  color: var(--foreground);
-  background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+*,
+::before,
+::after {
+  box-sizing: border-box;
+}
+
+@layer components {
+  .file-list-row-btn {
+    @apply flex size-8 items-center justify-center rounded-full hover:bg-button-hover;
+  }
 }
 
 @layer utilities {
-  .text-balance {
-    text-wrap: balance;
+  .text-lighten {
+    @apply text-transparent/60;
+  }
+
+  .cancel-btn {
+    @apply border border-zinc-300 hover:border-zinc-400;
   }
 }
