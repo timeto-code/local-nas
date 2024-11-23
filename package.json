@@ -8,6 +8,7 @@
     "build": "next build",
     "start": "next start -p 3001",
     "test": "tsx ./test/test.build.ts",
+    "clear": "tsx ./test/test.clear.ts",
     "lint": "next lint"
   },
   "dependencies": {

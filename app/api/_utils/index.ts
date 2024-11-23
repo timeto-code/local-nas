@@ -22,7 +22,7 @@ export class Logger {
   }
 }
 
-const shared = process.env.SHARED_FOLDER_PATH || path.join(process.cwd(), 'shared');
+const shared = process.env.SHARED_FOLDER_PATH || path.join(process.cwd(), 'public', 'shared');
 export const directory = {
   shared,
   temp: path.join(shared, 'temp'),

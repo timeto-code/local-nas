@@ -36,5 +36,5 @@ yarn-error.log*
 next-env.d.ts
 
 # 共享文件夹
-shared/*
-!shared/.gitkeep
+public/shared/*
+!public/shared/.gitkeep

@@ -17,10 +17,19 @@ export const fileType = {
   [category.document]: ['doc', 'docx', 'ppt', 'pptx', 'xls', 'xlsx', 'pdf', 'txt'],
   [category.image]: ['png', 'jpg', 'jpeg', 'gif', 'webp', 'bmp', 'ico'],
   [category.video]: ['mp4', 'avi', 'mov', 'mkv', 'flv', 'wmv', 'rmvb'],
-  [category.audio]: ['mp3', 'wav', 'flac', 'ape', 'aac', 'ogg'],
+  [category.audio]: ['mp3', 'wav', 'flac', 'ape', 'aac', 'ogg', 'm4a'],
   [category.zip]: ['zip', 'rar', '7z', 'tar', 'gz'],
   [category.installer]: ['exe', 'dmg', 'pkg'],
 };
+
+export function getCategoryByType(type: string): FileCategory | null {
+  for (const [key, extensions] of Object.entries(fileType)) {
+    if (extensions.includes(type)) {
+      return key as FileCategory;
+    }
+  }
+  return null;
+}
 
 type CommonStore = {
   isUploading: boolean;

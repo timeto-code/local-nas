@@ -10,6 +10,7 @@ import { LuDownload } from 'react-icons/lu';
 import { FileDto } from '@/dtos';
 import { bytesToSize } from '@/lib/utils';
 import { useDeleteFileStore, useFileListStore, useRowStore } from '@/store';
+import Link from 'next/link';
 
 const ListHeader = () => {
   const [animateColumn, setAnimateColumn] = useState(false);
@@ -174,7 +175,9 @@ const ListRow = ({ file }: Props) => {
             onMouseEnter={() => setShowMenu(true)}
             onMouseLeave={() => setShowMenu(false)}
           >
-            <p className="flex-1 truncate text-sm lg:pr-5">{file.name}</p>
+            <p className="flex-1 truncate text-sm lg:pr-5">
+              <Link href={`/preview/${file.name}`}>{file.name}</Link>
+            </p>
             <div className="flex w-44 items-center justify-end overflow-hidden lg:w-[40%]">
               <div className="hidden basis-1/2 overflow-hidden lg:block">
                 <p className={`${animateColumn && 'animate-birthtime-slide-in'} text-sm`}>
