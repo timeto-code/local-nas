@@ -109,7 +109,7 @@ export const GET = async (req: NextRequest) => {
     const uniqueFilePath = generateUniquePath(directory.shared, name);
     filehandle = await fs.promises.open(uniqueFilePath, 'w');
     writeStream = filehandle.createWriteStream({
-      highWaterMark: 1024 * 1024 * 50,
+      highWaterMark: 1024 * 1024 * 5,
     });
 
     const messageTransformStream = new TransformStream();

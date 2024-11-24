@@ -25,7 +25,9 @@ const page = ({ params }: { params: { name: string } }) => {
     case category.video:
       return (
         <div className="flex h-full items-center justify-center bg-black md:p-20">
-          <video className="rounded outline-none" src={`/shared/${params.name}`} controls />
+          <div className="overflow-hidden rounded">
+            <video className="rounded outline-none" src={`/api/play/${params.name}`} controls />
+          </div>
         </div>
       );
 
