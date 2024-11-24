@@ -38,7 +38,8 @@ export const upload = async (fileArray: File[]): Promise<void> => {
     try {
       const res = await axios({
         method: 'POST',
-        url: '/api/upload',
+        // url: '/api/upload',
+        url: 'http://localhost:8080/upload',
         params: {
           name: chunk.name,
           index: chunk.index,
@@ -71,7 +72,8 @@ const sseMerge = async (chunk: Chunk, uploader: Uploader): Promise<void> => {
 
   const searchParams = new URLSearchParams();
   searchParams.append('name', chunk.name);
-  const eventSource = new EventSource(`/api/upload?${searchParams.toString()}`);
+  // const eventSource = new EventSource(`/api/upload?${searchParams.toString()}`);
+  const eventSource = new EventSource(`http://localhost:8080/upload?${searchParams.toString()}`);
 
   eventSource.addEventListener('success', (event) => {
     const { name, stats } = JSON.parse(event.data);
