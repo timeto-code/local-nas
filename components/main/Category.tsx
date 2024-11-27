@@ -3,56 +3,57 @@ import { GoFileZip } from 'react-icons/go';
 import { IoDocumentTextOutline, IoImageOutline } from 'react-icons/io5';
 import { MdInstallDesktop, MdOutlineAudioFile } from 'react-icons/md';
 
-import { category, FileCategory, useSearchFileStore } from '@/store';
+import { useSearchFileStore } from '@/store';
 import { useEffect, useState } from 'react';
+import { FileCategory } from '@/types/FsDirentDto';
 
 const CATEGORY_CONFIG: Record<
   string,
   {
-    type: FileCategory;
+    category: FileCategory;
     color: string;
     borderColor: string;
     icon: JSX.Element;
   }
 > = {
   文档: {
-    type: category.document,
+    category: FileCategory.Document,
     color: '#FFC107',
     borderColor: 'border-[#FFC107]',
     icon: <IoDocumentTextOutline size={20} color="#FFC107" />,
   },
   图片: {
-    type: category.image,
+    category: FileCategory.Image,
     color: '#4CAF50',
     borderColor: 'border-[#4CAF50]',
     icon: <IoImageOutline size={20} color="#4CAF50" />,
   },
   视频: {
-    type: category.video,
+    category: FileCategory.Video,
     color: '#F44336',
     borderColor: 'border-[#F44336]',
     icon: <FaFilm size={20} color="#F44336" />,
   },
   音频: {
-    type: category.audio,
+    category: FileCategory.Audio,
     color: '#2196F3',
     borderColor: 'border-[#2196F3]',
     icon: <MdOutlineAudioFile size={20} color="#2196F3" />,
   },
   压缩包LG: {
-    type: category.zip,
+    category: FileCategory.Zip,
     color: '#795548',
     borderColor: 'border-[#795548]',
     icon: <GoFileZip size={20} color="#795548" />,
   },
   压缩包MD: {
-    type: category.zip,
+    category: FileCategory.Zip,
     color: '#795548',
     borderColor: 'border-[#795548]',
     icon: <GoFileZip size={20} color="#795548" />,
   },
   安装包: {
-    type: category.installer,
+    category: FileCategory.Installer,
     color: '#607D8B',
     borderColor: 'border-[#607D8B]',
     icon: <MdInstallDesktop size={20} color="#607D8B" />,
@@ -72,7 +73,7 @@ const Item = ({ label, className }: ItemProps) => {
     setIsActive(!isActive);
 
     useSearchFileStore.getState().setActivatedLabel(!isActive ? label : '');
-    useSearchFileStore.getState().setType(!isActive ? CATEGORY_CONFIG[label].type : category.all);
+    useSearchFileStore.getState().setCategory(!isActive ? CATEGORY_CONFIG[label].category : FileCategory.All);
   };
 
   useEffect(() => {

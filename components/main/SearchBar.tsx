@@ -12,7 +12,7 @@ const SearchBar = () => {
   const handleOnchange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (debounceTimerId.current) clearTimeout(debounceTimerId.current);
     debounceTimerId.current = setTimeout(() => {
-      useSearchFileStore.getState().setSearch(e.target.value);
+      useSearchFileStore.getState().setKeyword(e.target.value);
     }, 500);
   };
 

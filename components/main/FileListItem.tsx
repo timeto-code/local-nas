@@ -7,10 +7,10 @@ import { IoMdMore } from 'react-icons/io';
 import { LiaSpinnerSolid } from 'react-icons/lia';
 import { LuDownload } from 'react-icons/lu';
 
-import { FileDto } from '@/dtos';
 import { bytesToSize } from '@/lib/utils';
 import { useDeleteFileStore, useFileListStore, useRowStore } from '@/store';
-import Link from 'next/link';
+import { FsDirentDto } from '@/types/FsDirentDto';
+import { useRouter } from 'next/navigation';
 
 const ListHeader = () => {
   const [animateColumn, setAnimateColumn] = useState(false);
@@ -114,10 +114,11 @@ const ListHeader = () => {
 };
 
 interface Props {
-  file: FileDto;
+  file: FsDirentDto;
 }
 
 const ListRow = ({ file }: Props) => {
+  const router = useRouter();
   const [animateColumn, setAnimateColumn] = useState(false);
   const [showMenu, setShowMenu] = useState(false);
   const [visible, setVisible] = useState(true);
@@ -162,6 +163,11 @@ const ListRow = ({ file }: Props) => {
     };
   }, []);
 
+  const handlePlay = () => {
+    sessionStorage.setItem('file', JSON.stringify(file));
+    router.push('/view');
+  };
+
   return (
     <div className={`max-h-[48px] overflow-hidden ${deleted && 'animate-row-delete'}`}>
       {hidden ? (
@@ -175,9 +181,9 @@ const ListRow = ({ file }: Props) => {
             onMouseEnter={() => setShowMenu(true)}
             onMouseLeave={() => setShowMenu(false)}
           >
-            <p className="flex-1 truncate text-sm lg:pr-5">
-              <Link href={`/preview/${file.name}`}>{file.name}</Link>
-            </p>
+            <button className="flex-1 truncate text-left text-sm lg:pr-5" onClick={handlePlay}>
+              {file.name}
+            </button>
             <div className="flex w-44 items-center justify-end overflow-hidden lg:w-[40%]">
               <div className="hidden basis-1/2 overflow-hidden lg:block">
                 <p className={`${animateColumn && 'animate-birthtime-slide-in'} text-sm`}>

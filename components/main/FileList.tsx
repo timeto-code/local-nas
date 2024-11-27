@@ -10,23 +10,22 @@ import { ListHeader, ListRow } from './FileListItem';
 const FileList = () => {
   const files = useFileListStore((state) => state.files);
   const [loading, setLoading] = useState(true);
-  const searchKey = useSearchFileStore((state) => state.search);
-  const type = useSearchFileStore((state) => state.type);
+  const keyword = useSearchFileStore((state) => state.keyword);
+  const category = useSearchFileStore((state) => state.category);
 
   useEffect(() => {
     const fetchFiles = async () => {
       try {
         const res = await axios({
-          url: '/api/list',
+          url: 'http://localhost:8080/shares/list',
           method: 'GET',
           params: {
-            search: searchKey,
-            type,
+            keyword,
+            category,
           },
         });
         if (res.data.code === 0) {
-          // setFiles(res.data.message);
-          useFileListStore.getState().setFiles(res.data.message);
+          useFileListStore.getState().setFiles(res.data.payload);
         } else {
           toast('获取文件列表失败', '请刷新页面后重试');
         }
@@ -39,7 +38,7 @@ const FileList = () => {
     };
 
     fetchFiles();
-  }, [searchKey, type]);
+  }, [keyword, category]);
 
   if (loading) {
     return (

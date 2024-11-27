@@ -1,44 +1,50 @@
-import { FileDto } from '@/dtos';
+import { FileCategory, fileType, FsDirentDto } from '@/types/FsDirentDto';
 import { create } from 'zustand';
 
-export const category = {
-  all: 'all',
-  document: 'document',
-  image: 'image',
-  video: 'video',
-  audio: 'audio',
-  zip: 'zip',
-  installer: 'installer',
-} as const;
-export type FileCategory = (typeof category)[keyof typeof category];
+// export const category = {
+//   all: 'all',
+//   document: 'document',
+//   image: 'image',
+//   video: 'video',
+//   audio: 'audio',
+//   zip: 'zip',
+//   installer: 'installer',
+// } as const;
+// export type FileCategory = (typeof category)[keyof typeof category];
 
-export const fileType = {
-  [category.all]: [''],
-  [category.document]: ['doc', 'docx', 'ppt', 'pptx', 'xls', 'xlsx', 'pdf', 'txt'],
-  [category.image]: ['png', 'jpg', 'jpeg', 'gif', 'webp', 'bmp', 'ico'],
-  [category.video]: ['mp4', 'avi', 'mov', 'mkv', 'flv', 'wmv', 'rmvb'],
-  [category.audio]: ['mp3', 'wav', 'flac', 'ape', 'aac', 'ogg', 'm4a'],
-  [category.zip]: ['zip', 'rar', '7z', 'tar', 'gz'],
-  [category.installer]: ['exe', 'dmg', 'pkg'],
-};
+// export const fileType = {
+//   [category.all]: [''],
+//   [category.document]: ['doc', 'docx', 'ppt', 'pptx', 'xls', 'xlsx', 'pdf', 'txt'],
+//   [category.image]: ['png', 'jpg', 'jpeg', 'gif', 'webp', 'bmp', 'ico'],
+//   [category.video]: ['mp4', 'avi', 'mov', 'mkv', 'flv', 'wmv', 'rmvb'],
+//   [category.audio]: ['mp3', 'wav', 'flac', 'ape', 'aac', 'ogg', 'm4a'],
+//   [category.zip]: ['zip', 'rar', '7z', 'tar', 'gz'],
+//   [category.installer]: ['exe', 'dmg', 'pkg'],
+// };
 
-export function getCategoryByType(type: string): FileCategory | null {
-  for (const [key, extensions] of Object.entries(fileType)) {
-    if (extensions.includes(type)) {
-      return key as FileCategory;
-    }
-  }
-  return null;
-}
+// export function getCategoryByType(type: string): FileCategory | null {
+//   for (const [key, extensions] of Object.entries(fileType)) {
+//     if (extensions.includes(type)) {
+//       return key as FileCategory;
+//     }
+//   }
+//   return null;
+// }
 
 type CommonStore = {
   isUploading: boolean;
   setIsUploading: (isUploading: boolean) => void;
+
+  playFile: FsDirentDto | null;
+  setPlayFile: (file: FsDirentDto | null) => void;
 };
 
 export const useCommonStore = create<CommonStore>((set) => ({
   isUploading: false,
   setIsUploading: (isUploading) => set(() => ({ isUploading })),
+
+  playFile: null,
+  setPlayFile: (file) => set(() => ({ playFile: file })),
 }));
 
 type ShowProgressStore = {
@@ -62,19 +68,19 @@ export const useDeleteFileStore = create<DeleteFileStore>((set) => ({
 }));
 
 type SearchFileStore = {
-  search: string;
-  type: FileCategory;
+  keyword: string;
+  category: FileCategory;
   activatedLabel: string;
-  setSearch: (search: string) => void;
-  setType: (type: FileCategory) => void;
+  setKeyword: (keyword: string) => void;
+  setCategory: (category: FileCategory) => void;
   setActivatedLabel: (label: string) => void;
 };
 
 export const useSearchFileStore = create<SearchFileStore>((set) => ({
-  search: '',
-  setSearch: (search) => set(() => ({ search })),
-  type: category.all,
-  setType: (type) => set(() => ({ type })),
+  keyword: '',
+  setKeyword: (keyword) => set(() => ({ keyword })),
+  category: FileCategory.All,
+  setCategory: (category) => set(() => ({ category })),
   activatedLabel: '',
   setActivatedLabel: (label) => set(() => ({ activatedLabel: label })),
 }));
@@ -116,10 +122,10 @@ export const useRowStore = create<RowStore>((set) => ({
 }));
 
 type FileListStore = {
-  files: FileDto[];
-  setFiles: (files: FileDto[]) => void;
-  addFile: (file: FileDto) => void;
-  removeFile: (file: FileDto) => void;
+  files: FsDirentDto[];
+  setFiles: (files: FsDirentDto[]) => void;
+  addFile: (file: FsDirentDto) => void;
+  removeFile: (file: FsDirentDto) => void;
   sortByNamesAsc: (asc: boolean) => void;
   sortByDatesAsc: (asc: boolean) => void;
 };
@@ -130,10 +136,10 @@ export const useFileListStore = create<FileListStore>((set) => ({
   addFile: (file) =>
     set((state) => {
       const extention = file.name.split('.').pop()!;
-      const types = fileType[useSearchFileStore.getState().type];
+      const extentions = fileType[useSearchFileStore.getState().category];
 
       const label = useSearchFileStore.getState().activatedLabel;
-      if (types.includes(extention) || !label) {
+      if (extentions.includes(extention) || !label) {
         return { files: [file, ...state.files] };
       }
 

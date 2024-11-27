@@ -1,9 +1,9 @@
 import axios from 'axios';
 
-import { FileDto } from '@/dtos';
 import { useCommonStore, useFileListStore } from '@/store';
 import { useUploaderStore } from '@/store/useUploaderStore';
 import { Chunk, Uploader } from '../modules/uploader';
+import { FileCategory, FsDirentDto } from '@/types/FsDirentDto';
 
 export const upload = async (fileArray: File[]): Promise<void> => {
   useCommonStore.getState().setIsUploading(true);
@@ -17,14 +17,7 @@ export const upload = async (fileArray: File[]): Promise<void> => {
     const transferFile = event.detail;
     useUploaderStore.getState().update(transferFile);
     if (transferFile.status === 'success') {
-      const dto: FileDto = {
-        name: transferFile.serverName,
-        stats: {
-          birthtime: transferFile.serverBirthtime,
-          size: transferFile.file.size,
-        },
-      };
-      useFileListStore.getState().addFile(dto);
+      fetchNewFileByName(transferFile.serverName);
     }
   });
 
@@ -51,7 +44,7 @@ export const upload = async (fileArray: File[]): Promise<void> => {
       });
 
       if (res.data.code === 0 && res.data) {
-        const { loaded } = res.data.message;
+        const { loaded } = res.data.payload;
         const done = uploader.updateReceivedBytes(chunk.id, loaded);
         if (done) {
           await sseMerge(chunk, uploader);
@@ -76,7 +69,7 @@ const sseMerge = async (chunk: Chunk, uploader: Uploader): Promise<void> => {
   const eventSource = new EventSource(`http://localhost:8080/upload?${searchParams.toString()}`);
 
   eventSource.addEventListener('success', (event) => {
-    const { name, stats } = JSON.parse(event.data);
+    const { name, stats } = JSON.parse(event.data).payload;
     uploader.setUploadDoneTimestamp(chunk.id);
     uploader.syncFileStats(chunk.id, name, stats.birthtime);
     uploader.updateStatus(chunk.id, 'success');
@@ -95,4 +88,23 @@ const sseMerge = async (chunk: Chunk, uploader: Uploader): Promise<void> => {
     uploader.updateStatus(chunk.id, 'failure');
     eventSource!.close();
   };
+};
+
+const fetchNewFileByName = async (name: string): Promise<void> => {
+  try {
+    const res = await axios({
+      url: 'http://localhost:8080/shares/list',
+      method: 'GET',
+      params: {
+        keyword: name,
+        category: FileCategory.All,
+      },
+    });
+    if (res.data.code === 0 && res.data) {
+      const file = res.data.payload[0] as FsDirentDto;
+      useFileListStore.getState().addFile(file);
+    }
+  } catch (error) {
+    console.error(`Failed to fetch new file: ${name}\n${error}`);
+  }
 };
