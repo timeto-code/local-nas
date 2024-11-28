@@ -7,7 +7,7 @@ import { IoMdMore } from 'react-icons/io';
 import { LiaSpinnerSolid } from 'react-icons/lia';
 import { LuDownload } from 'react-icons/lu';
 
-import { bytesToSize } from '@/lib/utils';
+import { bytesToSize, toast } from '@/lib/utils';
 import { useDeleteFileStore, useFileListStore, useRowStore } from '@/store';
 import { FsDirentDto } from '@/types/FsDirentDto';
 import { useRouter } from 'next/navigation';
@@ -168,6 +168,39 @@ const ListRow = ({ file }: Props) => {
     router.push('/view');
   };
 
+  const handleDownload = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.stopPropagation();
+
+    // 服务端：express res.download() 提供下载
+    // 客户端：HEAD 请求 + a 标签请求下载
+    fetch(file.downloadUrl, { method: 'HEAD' })
+      .then((res) => {
+        if (res.ok) {
+          const a = document.createElement('a');
+          a.href = file.downloadUrl;
+          a.download = file.name;
+          a.click();
+          a.remove();
+        } else {
+          toast('下载失败', '目标资源不存在');
+        }
+      })
+      .catch((error) => {
+        console.error(error);
+        toast('下载失败', '网络请求失败');
+      });
+
+    // 后端能配合 express download 和自定义实现使用。但是性能都低下，不如上面的直接和 express download 配合使用。
+    // 服务器：fs.createReadStream() + res.pipe() 提供二进制流下载
+    // 客户端（next.js 页面）：a 标签携带参数请求 next.js 后台
+    // 客户端（next.js 后台）：提取参数，fetch 请求服务器，获得二进制流，返回 web ReadableStream，提供 a 标签下载
+    // const a = document.createElement('a');
+    // a.href = `/api/download/${file.name}?filesize=${file.stats.size}&downloadUrl=${file.downloadUrl}`;
+    // a.download = file.name;
+    // a.click();
+    // a.remove();
+  };
+
   return (
     <div className={`max-h-[48px] overflow-hidden ${deleted && 'animate-row-delete'}`}>
       {hidden ? (
@@ -181,9 +214,9 @@ const ListRow = ({ file }: Props) => {
             onMouseEnter={() => setShowMenu(true)}
             onMouseLeave={() => setShowMenu(false)}
           >
-            <button className="flex-1 truncate text-left text-sm lg:pr-5" onClick={handlePlay}>
-              {file.name}
-            </button>
+            <p className="flex-1 truncate text-left text-sm lg:pr-5">
+              <button onClick={handlePlay}>{file.name}</button>
+            </p>
             <div className="flex w-44 items-center justify-end overflow-hidden lg:w-[40%]">
               <div className="hidden basis-1/2 overflow-hidden lg:block">
                 <p className={`${animateColumn && 'animate-birthtime-slide-in'} text-sm`}>
@@ -209,17 +242,7 @@ const ListRow = ({ file }: Props) => {
                     )}
                   </>
                 )}
-                <button
-                  title="下载"
-                  className="file-list-row-btn"
-                  onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
-                    e.stopPropagation();
-                    const a = document.createElement('a');
-                    a.href = `/api/download/${file.name}`;
-                    a.download = '';
-                    a.click();
-                  }}
-                >
+                <button title="下载" className="file-list-row-btn" onClick={handleDownload}>
                   <LuDownload size={18} />
                 </button>
               </div>
