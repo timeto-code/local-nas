@@ -17,7 +17,7 @@ const FileList = () => {
     const fetchFiles = async () => {
       try {
         const res = await axios({
-          url: 'http://localhost:8080/shares/list',
+          url: `${process.env.NEXT_PUBLIC_SERVER_URL}/shares/list`,
           method: 'GET',
           params: {
             keyword,

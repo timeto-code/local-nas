@@ -1,9 +1,7 @@
 'use client';
 
-import axios from 'axios';
-
 import { toast } from '@/lib/utils';
-import { useRowStore, useDeleteFileStore } from '@/store';
+import { useDeleteFileStore, useRowStore } from '@/store';
 
 const Confirmation = () => {
   const fileName = useDeleteFileStore((state) => state.deleteFile);
@@ -12,14 +10,11 @@ const Confirmation = () => {
     // 添加到正在执行的操作列表中，用于显示转圈提示
     useRowStore.getState().addRow(fileName);
 
-    axios
-      .delete(`/api/delete/${fileName}`)
+    fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/delete/${fileName}`, { method: 'DELETE' })
       .then((res) => {
-        if (res.data.code === 0) {
+        if (res.ok) {
           // 触发行元素删除动画
           useRowStore.getState().addDeletedRow(fileName);
-
-          // useDeleteFileStore.getState().setFileDeleted();
         } else {
           toast('删除失败', '请刷新页面后重试');
         }
