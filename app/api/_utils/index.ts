@@ -1,8 +1,5 @@
 import fs from 'fs';
-import { NextResponse } from 'next/server';
 import path from 'path';
-
-import { FileDto } from '@/dtos';
 
 export const msg = {
   success: 'success',
@@ -46,10 +43,4 @@ export const generateUniquePath = (dirPath: string, fileName: string) => {
   }
 
   return uniqueFilePath;
-};
-
-export type ApiSerializableResponse<T> = { code: 0 | 1; message: T | string | FileDto[] };
-
-export const createJsonResponse = <T>({ code, message }: ApiSerializableResponse<T>) => {
-  return NextResponse.json({ code, message });
 };

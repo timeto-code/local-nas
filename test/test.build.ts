@@ -43,6 +43,9 @@ async function setup() {
     debug(`Cloning repository into: ${newRepoPath}`);
     await execCommand(`git clone --branch ${currentBranch} --single-branch ${currentRepoPath} ${newRepoPath}`);
 
+    debug(`Copy .env file to new repository`);
+    fs.promises.copyFile(path.join(currentRepoPath, '.env'), path.join(newRepoPath, '.env'));
+
     process.chdir(newRepoPath);
 
     debug('Removing origin remote');
