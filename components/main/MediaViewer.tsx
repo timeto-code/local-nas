@@ -49,8 +49,8 @@ const MediaViewer = () => {
 
     default:
       return (
-        <div className="flex h-full flex-col items-center justify-center text-lg">
-          <span>{file.name}</span>
+        <div className="flex h-full w-full flex-col items-center justify-center px-3 text-lg">
+          <span className="w-full truncate text-center">{file.name}</span>
           <span>文件类型不支持预览</span>
         </div>
       );

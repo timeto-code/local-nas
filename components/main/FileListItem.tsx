@@ -96,7 +96,7 @@ const ListHeader = () => {
               )}
             </div>
           </button>
-          <p className="min-w-20 text-end lg:basis-1/4">大小</p>
+          <p className="hidden min-w-20 text-end md:block lg:basis-1/4">大小</p>
           <div className="flex min-w-24 items-center justify-end lg:basis-1/4">
             <button
               className="file-list-row-btn"
@@ -219,16 +219,18 @@ const ListRow = ({ file }: Props) => {
               <div className="w-5">
                 <Icons name={file.name} size={20} />
               </div>
-              <button onClick={handlePlay}>{file.name}</button>
+              <button className="truncate" onClick={handlePlay}>
+                {file.name}
+              </button>
             </div>
-            <div className="flex w-44 items-center justify-end overflow-hidden lg:w-[40%]">
+            <div className="flex w-20 items-center justify-end overflow-hidden md:w-44 lg:w-[40%]">
               <div className="hidden basis-1/2 overflow-hidden lg:block">
                 <p className={`${animateColumn && 'animate-birthtime-slide-in'} text-sm`}>
                   {new Date(file.stats.birthtime).toLocaleDateString('zh', option)}
                 </p>
               </div>
-              <p className="min-w-20 text-end text-sm lg:basis-1/4">{bytesToSize(file.stats.size)}</p>
-              <div className="flex min-w-24 items-center justify-end space-x-2 lg:basis-1/4">
+              <p className="hidden min-w-20 text-end text-sm md:block lg:basis-1/4">{bytesToSize(file.stats.size)}</p>
+              <div className="flex min-w-20 items-center justify-end space-x-2 lg:basis-1/4">
                 {showMenu && (
                   <>
                     {row ? (
