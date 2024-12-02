@@ -11,6 +11,7 @@ import { bytesToSize, toast } from '@/lib/utils';
 import { useDeleteFileStore, useFileListStore, useRowStore } from '@/store';
 import { FsDirentDto } from '@/types/FsDirentDto';
 import { useRouter } from 'next/navigation';
+import Icons from '../Icons';
 
 const ListHeader = () => {
   const [animateColumn, setAnimateColumn] = useState(false);
@@ -214,9 +215,12 @@ const ListRow = ({ file }: Props) => {
             onMouseEnter={() => setShowMenu(true)}
             onMouseLeave={() => setShowMenu(false)}
           >
-            <p className="flex-1 truncate text-left text-sm lg:pr-5">
+            <div className="flex flex-1 space-x-2 truncate text-sm lg:pr-5">
+              <div className="w-5">
+                <Icons name={file.name} size={20} />
+              </div>
               <button onClick={handlePlay}>{file.name}</button>
-            </p>
+            </div>
             <div className="flex w-44 items-center justify-end overflow-hidden lg:w-[40%]">
               <div className="hidden basis-1/2 overflow-hidden lg:block">
                 <p className={`${animateColumn && 'animate-birthtime-slide-in'} text-sm`}>

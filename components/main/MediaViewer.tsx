@@ -32,10 +32,8 @@ const MediaViewer = () => {
 
     case FileCategory.Video:
       return (
-        <div className="flex h-full items-center justify-center bg-black md:p-20">
-          <div className="overflow-hidden rounded">
-            <video className="rounded outline-none" src={file.playUrl} controls />
-          </div>
+        <div className="flex h-full items-center justify-center bg-black md:p-10 lg:p-20">
+          <video className="max-h-full max-w-full object-contain md:rounded-lg" src={file.playUrl} controls />
         </div>
       );
 

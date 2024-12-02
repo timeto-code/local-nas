@@ -1,11 +1,7 @@
-import { FaFilm } from 'react-icons/fa';
-import { GoFileZip } from 'react-icons/go';
-import { IoDocumentTextOutline, IoImageOutline } from 'react-icons/io5';
-import { MdInstallDesktop, MdOutlineAudioFile } from 'react-icons/md';
-
 import { useSearchFileStore } from '@/store';
-import { useEffect, useState } from 'react';
 import { FileCategory } from '@/types/FsDirentDto';
+import { useEffect, useState } from 'react';
+import Icons from '../Icons';
 
 const CATEGORY_CONFIG: Record<
   string,
@@ -20,43 +16,43 @@ const CATEGORY_CONFIG: Record<
     category: FileCategory.Document,
     color: '#FFC107',
     borderColor: 'border-[#FFC107]',
-    icon: <IoDocumentTextOutline size={20} color="#FFC107" />,
+    icon: <Icons name="txt" size={21} />,
   },
   图片: {
     category: FileCategory.Image,
     color: '#4CAF50',
     borderColor: 'border-[#4CAF50]',
-    icon: <IoImageOutline size={20} color="#4CAF50" />,
+    icon: <Icons name="png" size={20} className="mr-0.5" />,
   },
   视频: {
     category: FileCategory.Video,
     color: '#F44336',
     borderColor: 'border-[#F44336]',
-    icon: <FaFilm size={20} color="#F44336" />,
+    icon: <Icons name="mp4" size={20} />,
   },
   音频: {
     category: FileCategory.Audio,
     color: '#2196F3',
     borderColor: 'border-[#2196F3]',
-    icon: <MdOutlineAudioFile size={20} color="#2196F3" />,
+    icon: <Icons name="mp3" size={20} />,
   },
   压缩包LG: {
     category: FileCategory.Zip,
     color: '#795548',
     borderColor: 'border-[#795548]',
-    icon: <GoFileZip size={20} color="#795548" />,
+    icon: <Icons name="zip" size={20} />,
   },
   压缩包MD: {
     category: FileCategory.Zip,
     color: '#795548',
     borderColor: 'border-[#795548]',
-    icon: <GoFileZip size={20} color="#795548" />,
+    icon: <Icons name="zip" size={20} />,
   },
   安装包: {
     category: FileCategory.Installer,
     color: '#607D8B',
     borderColor: 'border-[#607D8B]',
-    icon: <MdInstallDesktop size={20} color="#607D8B" />,
+    icon: <Icons name="exe" size={20} />,
   },
 };
 
