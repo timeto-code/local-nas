@@ -10,7 +10,8 @@ const Confirmation = () => {
     // 添加到正在执行的操作列表中，用于显示转圈提示
     useRowStore.getState().addRow(fileName);
 
-    fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/delete/${fileName}`, { method: 'DELETE' })
+    const base = sessionStorage.getItem('server');
+    fetch(`${base}/delete/${fileName}`, { method: 'DELETE' })
       .then((res) => {
         if (res.ok) {
           // 触发行元素删除动画

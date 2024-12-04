@@ -1,4 +1,4 @@
-import MediaViewer from '@/components/main/MediaViewer';
+import MediaViewer from '../../_components/MediaViewer';
 
 const page = () => {
   return <MediaViewer />;

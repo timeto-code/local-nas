@@ -1,6 +1,5 @@
 'use client';
 
-import axios from 'axios';
 import { useEffect, useState } from 'react';
 
 import { toast } from '@/lib/utils';
@@ -14,30 +13,28 @@ const FileList = () => {
   const category = useSearchFileStore((state) => state.category);
 
   useEffect(() => {
-    const fetchFiles = async () => {
-      try {
-        const res = await axios({
-          url: `${process.env.NEXT_PUBLIC_SERVER_URL}/shares/list`,
-          method: 'GET',
-          params: {
-            keyword,
-            category,
-          },
-        });
-        if (res.data.code === 0) {
-          useFileListStore.getState().setFiles(res.data.payload);
+    fetch(`${sessionStorage.getItem('server')}/shares/list?keyword=${keyword}&category=${category}`)
+      .then((res) => {
+        if (res.ok) {
+          return res.json();
         } else {
-          toast('获取文件列表失败', '请刷新页面后重试');
+          throw new Error(`Response not ok: ${res.status} - ${res.statusText}`);
         }
-      } catch (error) {
-        console.error(error);
+      })
+      .then((data) => {
+        if (data.code === 0 && data.payload) {
+          useFileListStore.getState().setFiles(data.payload);
+        } else {
+          throw new Error(`Code not 0: ${data.code}`);
+        }
+      })
+      .catch((error) => {
+        console.error(`Failed to fetch files: ${error}`);
         toast('获取文件列表失败', '请刷新页面后重试');
-      }
-
-      setLoading(false);
-    };
-
-    fetchFiles();
+      })
+      .finally(() => {
+        setLoading(false);
+      });
   }, [keyword, category]);
 
   if (loading) {

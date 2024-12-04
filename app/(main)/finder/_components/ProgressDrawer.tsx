@@ -8,7 +8,7 @@ import { bytesToSize } from '@/lib/utils';
 import { TransferFile } from '@/modules/uploader';
 import { useShowProgressStore } from '@/store';
 import { useUploaderStore } from '@/store/useUploaderStore';
-import ProgressBar from '../ProgressBar';
+import ProgressBar from '../../../../components/ProgressBar';
 
 /* 进度条 label */
 const Label = ({ transferFile }: { transferFile: TransferFile }) => {

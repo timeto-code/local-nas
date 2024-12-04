@@ -30,6 +30,8 @@ jobs:
       - name: clean and pack artifacts
         run: |
           VERSION=$(echo "${{ github.ref }}" | sed 's/refs\/tags\/v//') 
+          touch .env
+          echo "NEXT_PUBLIC_SERVER_URL=" >> .env
           tar -czf app-${VERSION}.tgz .next public shared package.json package-lock.json README.md
           zip -r app-${VERSION}.zip .next public shared package.json package-lock.json README.md
           echo "VERSION=$VERSION" >> $GITHUB_ENV

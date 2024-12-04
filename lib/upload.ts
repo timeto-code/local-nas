@@ -1,9 +1,7 @@
-import axios from 'axios';
-
 import { useCommonStore, useFileListStore } from '@/store';
 import { useUploaderStore } from '@/store/useUploaderStore';
-import { Chunk, Uploader } from '../modules/uploader';
 import { FileCategory, FsDirentDto } from '@/types/FsDirentDto';
+import { Chunk, Uploader } from '../modules/uploader';
 
 export const upload = async (fileArray: File[]): Promise<void> => {
   useCommonStore.getState().setIsUploading(true);
@@ -28,34 +26,36 @@ export const upload = async (fileArray: File[]): Promise<void> => {
   uploader.ready();
 
   uploader.start(async (chunk) => {
-    try {
-      const res = await axios({
-        method: 'POST',
-        url: `${process.env.NEXT_PUBLIC_SERVER_URL}/upload`,
-        params: {
-          name: chunk.name,
-          index: chunk.index,
-        },
-        data: chunk.data,
-        headers: {
-          'Content-Type': 'application/octet-stream',
-        },
-      });
-
-      if (res.data.code === 0 && res.data) {
-        const { loaded } = res.data.payload;
-        const done = uploader.updateReceivedBytes(chunk.id, loaded);
-        if (done) {
-          await sseMerge(chunk, uploader);
+    return fetch(`${sessionStorage.getItem('server')}/upload?name=${chunk.name}&index=${chunk.index}`, {
+      method: 'POST',
+      body: chunk.data,
+      headers: {
+        'Content-Type': 'application/octet-stream',
+      },
+    })
+      .then((res) => {
+        if (res.ok) {
+          return res.json();
+        } else {
+          throw new Error(`Response not ok: ${res.status} - ${res.statusText}`);
         }
-      } else {
-        console.error(`Upload chunk failed: ${chunk.index} - ${chunk.name}`);
+      })
+      .then((data) => {
+        if (data.code === 0) {
+          const { loaded } = data.payload;
+          const done = uploader.updateReceivedBytes(chunk.id, loaded);
+          if (done) {
+            sseMerge(chunk, uploader);
+          }
+        } else {
+          console.error(`Upload chunk failed: ${chunk.index} - ${chunk.name}`);
+          uploader.updateStatus(chunk.id, 'failure');
+        }
+      })
+      .catch((error) => {
+        console.error(`Failed to upload chunk: ${chunk.index} - ${chunk.name}\n${error}`);
         uploader.updateStatus(chunk.id, 'failure');
-      }
-    } catch (error) {
-      console.error(`Failed to upload chunk: ${chunk.index} - ${chunk.name}\n${error}`);
-      uploader.updateStatus(chunk.id, 'failure');
-    }
+      });
   });
 };
 
@@ -64,7 +64,7 @@ const sseMerge = async (chunk: Chunk, uploader: Uploader): Promise<void> => {
 
   const searchParams = new URLSearchParams();
   searchParams.append('name', chunk.name);
-  const eventSource = new EventSource(`${process.env.NEXT_PUBLIC_SERVER_URL}/upload?${searchParams.toString()}`);
+  const eventSource = new EventSource(`${sessionStorage.getItem('server')}/upload?${searchParams.toString()}`);
 
   eventSource.addEventListener('success', (event) => {
     const { name, stats } = JSON.parse(event.data).payload;
@@ -89,20 +89,23 @@ const sseMerge = async (chunk: Chunk, uploader: Uploader): Promise<void> => {
 };
 
 const fetchNewFileByName = async (name: string): Promise<void> => {
-  try {
-    const res = await axios({
-      url: `${process.env.NEXT_PUBLIC_SERVER_URL}/shares/list`,
-      method: 'GET',
-      params: {
-        keyword: name,
-        category: FileCategory.All,
-      },
+  return fetch(`${sessionStorage.getItem('server')}/shares/list?keyword=${name}&category=${FileCategory.All}`)
+    .then((res) => {
+      if (res.ok) {
+        return res.json();
+      } else {
+        throw new Error(`Response not ok: ${res.status} - ${res.statusText}`);
+      }
+    })
+    .then((data) => {
+      if (data.code === 0 && data.payload) {
+        const file = data.payload[0] as FsDirentDto;
+        useFileListStore.getState().addFile(file);
+      } else {
+        throw new Error(`Code not 0: ${data.code}`);
+      }
+    })
+    .catch((error) => {
+      console.error(`Failed to fetch new file: ${name}\n${error}`);
     });
-    if (res.data.code === 0 && res.data) {
-      const file = res.data.payload[0] as FsDirentDto;
-      useFileListStore.getState().addFile(file);
-    }
-  } catch (error) {
-    console.error(`Failed to fetch new file: ${name}\n${error}`);
-  }
 };

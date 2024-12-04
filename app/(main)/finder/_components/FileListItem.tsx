@@ -11,7 +11,7 @@ import { bytesToSize, toast } from '@/lib/utils';
 import { useDeleteFileStore, useFileListStore, useRowStore } from '@/store';
 import { FsDirentDto } from '@/types/FsDirentDto';
 import { useRouter } from 'next/navigation';
-import Icons from '../Icons';
+import Icons from '../../../../components/Icons';
 
 const ListHeader = () => {
   const [animateColumn, setAnimateColumn] = useState(false);
@@ -166,7 +166,7 @@ const ListRow = ({ file }: Props) => {
 
   const handlePlay = () => {
     sessionStorage.setItem('file', JSON.stringify(file));
-    router.push('/view');
+    router.push(`/finder/preview/${file.name}`);
   };
 
   const handleDownload = (e: React.MouseEvent<HTMLButtonElement>) => {

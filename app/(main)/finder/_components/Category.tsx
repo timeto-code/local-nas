@@ -1,7 +1,7 @@
 import { useSearchFileStore } from '@/store';
 import { FileCategory } from '@/types/FsDirentDto';
 import { useEffect, useState } from 'react';
-import Icons from '../Icons';
+import Icons from '../../../../components/Icons';
 
 const CATEGORY_CONFIG: Record<
   string,

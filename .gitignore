@@ -34,7 +34,3 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
-
-# 共享文件夹
-shared/*
-!shared/.gitkeep
