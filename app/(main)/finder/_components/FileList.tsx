@@ -1,19 +1,22 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 
 import { toast } from '@/lib/utils';
 import { useFileListStore, useSearchFileStore } from '@/store';
 import { ListHeader, ListRow } from './FileListItem';
+import { ConfigContext } from '@/contexts';
 
 const FileList = () => {
   const files = useFileListStore((state) => state.files);
   const [loading, setLoading] = useState(true);
   const keyword = useSearchFileStore((state) => state.keyword);
   const category = useSearchFileStore((state) => state.category);
+  const config = useContext(ConfigContext);
+  const server = `${config?.server_protocol}://${config?.server_host}:${config?.server_port}`;
 
   useEffect(() => {
-    fetch(`${sessionStorage.getItem('server')}/shares/list?keyword=${keyword}&category=${category}`)
+    fetch(`${server}/shares/list?keyword=${keyword}&category=${category}`)
       .then((res) => {
         if (res.ok) {
           return res.json();
@@ -35,7 +38,7 @@ const FileList = () => {
       .finally(() => {
         setLoading(false);
       });
-  }, [keyword, category]);
+  }, [keyword, category, server]);
 
   if (loading) {
     return (

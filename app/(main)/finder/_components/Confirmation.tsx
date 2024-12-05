@@ -1,17 +1,19 @@
 'use client';
 
+import { ConfigContext } from '@/contexts';
 import { toast } from '@/lib/utils';
 import { useDeleteFileStore, useRowStore } from '@/store';
+import { useContext } from 'react';
 
 const Confirmation = () => {
   const fileName = useDeleteFileStore((state) => state.deleteFile);
-
+  const config = useContext(ConfigContext);
+  const server = `${config?.server_protocol}://${config?.server_host}:${config?.server_port}`;
   const handleConfirm = async () => {
     // 添加到正在执行的操作列表中，用于显示转圈提示
     useRowStore.getState().addRow(fileName);
 
-    const base = sessionStorage.getItem('server');
-    fetch(`${base}/delete/${fileName}`, { method: 'DELETE' })
+    fetch(`${server}/delete/${fileName}`, { method: 'DELETE' })
       .then((res) => {
         if (res.ok) {
           // 触发行元素删除动画

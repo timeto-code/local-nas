@@ -1,16 +1,19 @@
 'use client';
 
-import { useRef } from 'react';
+import { useContext, useRef } from 'react';
 import { MdFileUpload, MdFileUploadOff } from 'react-icons/md';
 
 import { upload } from '@/lib/upload';
 import { useCommonStore, useShowProgressStore } from '@/store';
 import { Uploader } from '@/modules/uploader';
+import { ConfigContext } from '@/contexts';
 
 const Upload = () => {
   // const [isUploading, setIsUploading] = useState(false);
   const isUploading = useCommonStore((state) => state.isUploading);
   const inputRef = useRef<HTMLInputElement>(null);
+  const config = useContext(ConfigContext);
+  const server = `${config?.server_protocol}://${config?.server_host}:${config?.server_port}`;
 
   const handleCancel = () => {
     Uploader.isClosed = true;
@@ -26,7 +29,7 @@ const Upload = () => {
     const files2 = Array.from(fileList).filter((file) => file.name.includes('.'));
     useShowProgressStore.getState().setShowProgress(true);
 
-    upload(files2);
+    upload(files2, server);
 
     /* 得做清空操作，否则第二次选择相同内容时无法触发 onChange 事件 */
     if (inputRef.current) {

@@ -12,8 +12,6 @@ const MediaViewer = () => {
     const json = sessionStorage.getItem('file');
     if (json) {
       setFile(JSON.parse(json));
-
-      console.log('file:', JSON.parse(json));
     }
   }, []);
 

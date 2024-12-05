@@ -1,8 +1,9 @@
 'use server';
 
-import { logger } from '@/app/api/_utils';
-import config from '@/config.json';
+import fs from 'fs';
 import os from 'os';
+
+import { logger } from '@/app/api/_utils';
 
 export const hostInfo = async () => {
   try {
@@ -28,7 +29,8 @@ export const hostInfo = async () => {
 
 export const loadConfig = async () => {
   try {
-    return config;
+    const data = await fs.promises.readFile('config.json', 'utf8');
+    return JSON.parse(data);
   } catch (error) {
     logger.error(error);
     return null;

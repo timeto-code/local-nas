@@ -3,7 +3,7 @@ import { useUploaderStore } from '@/store/useUploaderStore';
 import { FileCategory, FsDirentDto } from '@/types/FsDirentDto';
 import { Chunk, Uploader } from '../modules/uploader';
 
-export const upload = async (fileArray: File[]): Promise<void> => {
+export const upload = async (fileArray: File[], server: string): Promise<void> => {
   useCommonStore.getState().setIsUploading(true);
   const uploader = new Uploader(fileArray);
 
@@ -15,7 +15,7 @@ export const upload = async (fileArray: File[]): Promise<void> => {
     const transferFile = event.detail;
     useUploaderStore.getState().update(transferFile);
     if (transferFile.status === 'success') {
-      fetchNewFileByName(transferFile.serverName);
+      fetchNewFileByName(transferFile.serverName, server);
     }
   });
 
@@ -26,7 +26,7 @@ export const upload = async (fileArray: File[]): Promise<void> => {
   uploader.ready();
 
   uploader.start(async (chunk) => {
-    return fetch(`${sessionStorage.getItem('server')}/upload?name=${chunk.name}&index=${chunk.index}`, {
+    return fetch(`${server}/upload?name=${chunk.name}&index=${chunk.index}`, {
       method: 'POST',
       body: chunk.data,
       headers: {
@@ -45,7 +45,7 @@ export const upload = async (fileArray: File[]): Promise<void> => {
           const { loaded } = data.payload;
           const done = uploader.updateReceivedBytes(chunk.id, loaded);
           if (done) {
-            sseMerge(chunk, uploader);
+            sseMerge(chunk, uploader, server);
           }
         } else {
           console.error(`Upload chunk failed: ${chunk.index} - ${chunk.name}`);
@@ -59,12 +59,13 @@ export const upload = async (fileArray: File[]): Promise<void> => {
   });
 };
 
-const sseMerge = async (chunk: Chunk, uploader: Uploader): Promise<void> => {
+const sseMerge = async (chunk: Chunk, uploader: Uploader, server: string): Promise<void> => {
   uploader.updateStatus(chunk.id, 'merging');
 
   const searchParams = new URLSearchParams();
   searchParams.append('name', chunk.name);
-  const eventSource = new EventSource(`${sessionStorage.getItem('server')}/upload?${searchParams.toString()}`);
+
+  const eventSource = new EventSource(`${server}/upload?${searchParams.toString()}`);
 
   eventSource.addEventListener('success', (event) => {
     const { name, stats } = JSON.parse(event.data).payload;
@@ -88,8 +89,8 @@ const sseMerge = async (chunk: Chunk, uploader: Uploader): Promise<void> => {
   };
 };
 
-const fetchNewFileByName = async (name: string): Promise<void> => {
-  return fetch(`${sessionStorage.getItem('server')}/shares/list?keyword=${name}&category=${FileCategory.All}`)
+const fetchNewFileByName = async (name: string, server: string): Promise<void> => {
+  return fetch(`${server}/shares/list?keyword=${name}&category=${FileCategory.All}`)
     .then((res) => {
       if (res.ok) {
         return res.json();
