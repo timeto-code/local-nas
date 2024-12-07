@@ -1,6 +1,7 @@
 'use client';
 
 import { loadConfig } from '@/actions/setup';
+import Circle from '@/components/Spinner';
 import { ConfigContext } from '@/contexts';
 import React, { useEffect } from 'react';
 
@@ -25,7 +26,11 @@ const ContextProvider = ({ children }: Props) => {
   }, []);
 
   if (loading) {
-    return <div>Loading...</div>;
+    return (
+      <div className="flex h-full items-center justify-center">
+        <Circle />
+      </div>
+    );
   }
 
   if (error) {

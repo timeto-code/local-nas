@@ -1,7 +1,11 @@
-import React from 'react';
+import Circle from '@/components/Spinner';
 
 const loading = () => {
-  return <div>loading</div>;
+  return (
+    <div className="flex h-full items-center justify-center">
+      <Circle />
+    </div>
+  );
 };
 
 export default loading;
