@@ -33,11 +33,14 @@ export const fileType: Record<FileCategory, string[]> = {
 };
 
 export type FsDirentDto = {
+  id: string;
   name: string;
   category: FileCategory;
   stats: {
-    birthtime: string;
+    dev: number;
+    ino: number;
     size: number;
+    birthtime: string;
   };
   playUrl: string;
   downloadUrl: string;

@@ -2,10 +2,10 @@
 
 import { useContext, useEffect, useState } from 'react';
 
-import { toast } from '@/lib/utils';
-import { useFileListStore, useSearchFileStore } from '@/store';
-import { ListHeader, ListRow } from './FileListItem';
 import { ConfigContext } from '@/contexts';
+import { useFileListStore, useSearchFileStore } from '@/store';
+import { fetchFileList } from '../_api';
+import { ListHeader, ListRow } from './FileListItem';
 
 const FileList = () => {
   const files = useFileListStore((state) => state.files);
@@ -16,28 +16,9 @@ const FileList = () => {
   const server = `${config?.server_protocol}://${config?.server_host}:${config?.server_port}`;
 
   useEffect(() => {
-    fetch(`${server}/shares/list?keyword=${keyword}&category=${category}`)
-      .then((res) => {
-        if (res.ok) {
-          return res.json();
-        } else {
-          throw new Error(`Response not ok: ${res.status} - ${res.statusText}`);
-        }
-      })
-      .then((data) => {
-        if (data.code === 0 && data.payload) {
-          useFileListStore.getState().setFiles(data.payload);
-        } else {
-          throw new Error(`Code not 0: ${data.code}`);
-        }
-      })
-      .catch((error) => {
-        console.error(`Failed to fetch files: ${error}`);
-        toast('获取文件列表失败', '请刷新页面后重试');
-      })
-      .finally(() => {
-        setLoading(false);
-      });
+    fetchFileList(keyword, category, server).finally(() => {
+      setLoading(false);
+    });
   }, [keyword, category, server]);
 
   if (loading) {

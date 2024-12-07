@@ -1,9 +1,9 @@
 'use client';
 
 import { ConfigContext } from '@/contexts';
-import { toast } from '@/lib/utils';
 import { useDeleteFileStore, useRowStore } from '@/store';
 import { useContext } from 'react';
+import { deleteFileByName } from '../_api';
 
 const Confirmation = () => {
   const fileName = useDeleteFileStore((state) => state.deleteFile);
@@ -12,21 +12,7 @@ const Confirmation = () => {
   const handleConfirm = async () => {
     // 添加到正在执行的操作列表中，用于显示转圈提示
     useRowStore.getState().addRow(fileName);
-
-    fetch(`${server}/delete/${fileName}`, { method: 'DELETE' })
-      .then((res) => {
-        if (res.ok) {
-          // 触发行元素删除动画
-          useRowStore.getState().addDeletedRow(fileName);
-        } else {
-          toast('删除失败', '请刷新页面后重试');
-        }
-      })
-      .catch((error) => {
-        console.error(`Delete file failed: ${error}`);
-        toast('删除失败', '请刷新页面后重试');
-      });
-
+    deleteFileByName(fileName, server);
     handleCancel();
   };
 

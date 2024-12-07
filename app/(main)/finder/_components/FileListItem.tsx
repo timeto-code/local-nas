@@ -7,11 +7,12 @@ import { IoMdMore } from 'react-icons/io';
 import { LiaSpinnerSolid } from 'react-icons/lia';
 import { LuDownload } from 'react-icons/lu';
 
-import { bytesToSize, toast } from '@/lib/utils';
+import { bytesToSize } from '@/lib/utils';
 import { useDeleteFileStore, useFileListStore, useRowStore } from '@/store';
 import { FsDirentDto } from '@/types/FsDirentDto';
 import { useRouter } from 'next/navigation';
-import Icons from '../../../../components/Icons';
+import { downloadFileByName } from '../_api';
+import Icons from '@/components/Icons';
 
 const ListHeader = () => {
   const [animateColumn, setAnimateColumn] = useState(false);
@@ -174,22 +175,7 @@ const ListRow = ({ file }: Props) => {
 
     // 服务端：express res.download() 提供下载
     // 客户端：HEAD 请求 + a 标签请求下载
-    fetch(file.downloadUrl, { method: 'HEAD' })
-      .then((res) => {
-        if (res.ok) {
-          const a = document.createElement('a');
-          a.href = file.downloadUrl;
-          a.download = file.name;
-          a.click();
-          a.remove();
-        } else {
-          toast('下载失败', '目标资源不存在');
-        }
-      })
-      .catch((error) => {
-        console.error(error);
-        toast('下载失败', '网络请求失败');
-      });
+    downloadFileByName(file.downloadUrl, file.name);
 
     // 后端能配合 express download 和自定义实现使用。但是性能都低下，不如上面的直接和 express download 配合使用。
     // 服务器：fs.createReadStream() + res.pipe() 提供二进制流下载

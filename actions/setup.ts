@@ -4,6 +4,7 @@ import fs from 'fs';
 import os from 'os';
 
 import { logger } from '@/app/api/_utils';
+import path from 'path';
 
 export const hostInfo = async () => {
   try {
@@ -29,7 +30,7 @@ export const hostInfo = async () => {
 
 export const loadConfig = async () => {
   try {
-    const data = await fs.promises.readFile('config.json', 'utf8');
+    const data = await fs.promises.readFile(path.join(process.cwd(), 'config.json'), 'utf8');
     return JSON.parse(data);
   } catch (error) {
     logger.error(error);

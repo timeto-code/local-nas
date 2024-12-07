@@ -3,10 +3,10 @@
 import { useContext, useRef } from 'react';
 import { MdFileUpload, MdFileUploadOff } from 'react-icons/md';
 
-import { upload } from '@/lib/upload';
-import { useCommonStore, useShowProgressStore } from '@/store';
-import { Uploader } from '@/modules/uploader';
+import { upload } from '@/app/(main)/finder/_utils/upload';
 import { ConfigContext } from '@/contexts';
+import { Uploader } from '@/modules/uploader';
+import { useCommonStore, useShowProgressStore } from '@/store';
 
 const Upload = () => {
   // const [isUploading, setIsUploading] = useState(false);
@@ -25,11 +25,9 @@ const Upload = () => {
     const fileList = e.target.files;
     if (!fileList) return;
 
-    /* 剔除没有后辍的文件，后台只处理有后辍的常规文件 */
-    const files2 = Array.from(fileList).filter((file) => file.name.includes('.'));
     useShowProgressStore.getState().setShowProgress(true);
 
-    upload(files2, server);
+    upload(Array.from(fileList), server);
 
     /* 得做清空操作，否则第二次选择相同内容时无法触发 onChange 事件 */
     if (inputRef.current) {

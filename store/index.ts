@@ -89,14 +89,14 @@ type ToastStore = {
   toastId: number;
   title: string;
   content: string;
-  setMessage: (title: string, content: string) => void;
+  setToast: (title: string, content: string) => void;
 };
 
 export const useToastStore = create<ToastStore>((set) => ({
   toastId: 0,
   title: '',
   content: '',
-  setMessage: (title, content) => set(() => ({ title, content })),
+  setToast: (title, content) => set(() => ({ toastId: Date.now(), title, content })),
 }));
 
 type RowStore = {
