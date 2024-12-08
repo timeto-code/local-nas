@@ -42,6 +42,7 @@ const Toast = () => {
     return () => {
       if (showTimerId) clearTimeout(showTimerId);
       if (animateTimerId) clearTimeout(animateTimerId);
+      useToastStore.setState({ toastId: 0 });
     };
   }, [showTimerId, animateTimerId]);
 
@@ -49,6 +50,7 @@ const Toast = () => {
 
   return (
     <div
+      key={toastId}
       className={`fixed left-[50%] top-0 z-50 w-[80%] transform space-y-1 rounded bg-failed px-4 py-3 shadow-lg hover:shadow-xl md:w-96 ${animate ? 'animate-toast-slide-down' : 'animate-toast-slide-up'}`}
       onMouseEnter={() => {
         if (showTimerId) clearTimeout(showTimerId);

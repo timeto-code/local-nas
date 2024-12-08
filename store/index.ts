@@ -1,35 +1,18 @@
-import { FileDto } from '@/dtos';
+import { FileCategory, fileType, FsDirentDto } from '@/types/FsDirentDto';
 import { create } from 'zustand';
-
-export const category = {
-  all: 'all',
-  document: 'document',
-  image: 'image',
-  video: 'video',
-  audio: 'audio',
-  zip: 'zip',
-  installer: 'installer',
-} as const;
-export type FileCategory = (typeof category)[keyof typeof category];
-
-export const fileType = {
-  [category.all]: [''],
-  [category.document]: ['doc', 'docx', 'ppt', 'pptx', 'xls', 'xlsx', 'pdf', 'txt'],
-  [category.image]: ['png', 'jpg', 'jpeg', 'gif', 'webp', 'bmp', 'ico'],
-  [category.video]: ['mp4', 'avi', 'mov', 'mkv', 'flv', 'wmv', 'rmvb'],
-  [category.audio]: ['mp3', 'wav', 'flac', 'ape', 'aac', 'ogg'],
-  [category.zip]: ['zip', 'rar', '7z', 'tar', 'gz'],
-  [category.installer]: ['exe', 'dmg', 'pkg'],
-};
 
 type CommonStore = {
   isUploading: boolean;
   setIsUploading: (isUploading: boolean) => void;
+  playFile: FsDirentDto | null;
+  setPlayFile: (file: FsDirentDto | null) => void;
 };
 
 export const useCommonStore = create<CommonStore>((set) => ({
   isUploading: false,
   setIsUploading: (isUploading) => set(() => ({ isUploading })),
+  playFile: null,
+  setPlayFile: (file) => set(() => ({ playFile: file })),
 }));
 
 type ShowProgressStore = {
@@ -53,19 +36,19 @@ export const useDeleteFileStore = create<DeleteFileStore>((set) => ({
 }));
 
 type SearchFileStore = {
-  search: string;
-  type: FileCategory;
+  keyword: string;
+  category: FileCategory;
   activatedLabel: string;
-  setSearch: (search: string) => void;
-  setType: (type: FileCategory) => void;
+  setKeyword: (keyword: string) => void;
+  setCategory: (category: FileCategory) => void;
   setActivatedLabel: (label: string) => void;
 };
 
 export const useSearchFileStore = create<SearchFileStore>((set) => ({
-  search: '',
-  setSearch: (search) => set(() => ({ search })),
-  type: category.all,
-  setType: (type) => set(() => ({ type })),
+  keyword: '',
+  setKeyword: (keyword) => set(() => ({ keyword })),
+  category: FileCategory.All,
+  setCategory: (category) => set(() => ({ category })),
   activatedLabel: '',
   setActivatedLabel: (label) => set(() => ({ activatedLabel: label })),
 }));
@@ -74,14 +57,14 @@ type ToastStore = {
   toastId: number;
   title: string;
   content: string;
-  setMessage: (title: string, content: string) => void;
+  setToast: (title: string, content: string) => void;
 };
 
 export const useToastStore = create<ToastStore>((set) => ({
   toastId: 0,
   title: '',
   content: '',
-  setMessage: (title, content) => set(() => ({ title, content })),
+  setToast: (title, content) => set(() => ({ toastId: Date.now(), title, content })),
 }));
 
 type RowStore = {
@@ -107,10 +90,10 @@ export const useRowStore = create<RowStore>((set) => ({
 }));
 
 type FileListStore = {
-  files: FileDto[];
-  setFiles: (files: FileDto[]) => void;
-  addFile: (file: FileDto) => void;
-  removeFile: (file: FileDto) => void;
+  files: FsDirentDto[];
+  setFiles: (files: FsDirentDto[]) => void;
+  addFile: (file: FsDirentDto) => void;
+  removeFile: (file: FsDirentDto) => void;
   sortByNamesAsc: (asc: boolean) => void;
   sortByDatesAsc: (asc: boolean) => void;
 };
@@ -121,10 +104,10 @@ export const useFileListStore = create<FileListStore>((set) => ({
   addFile: (file) =>
     set((state) => {
       const extention = file.name.split('.').pop()!;
-      const types = fileType[useSearchFileStore.getState().type];
+      const extentions = fileType[useSearchFileStore.getState().category];
 
       const label = useSearchFileStore.getState().activatedLabel;
-      if (types.includes(extention) || !label) {
+      if (extentions.includes(extention) || !label) {
         return { files: [file, ...state.files] };
       }
 
@@ -147,4 +130,14 @@ export const useFileListStore = create<FileListStore>((set) => ({
       );
       return { files };
     }),
+}));
+
+type LightboxStore = {
+  file: FsDirentDto | null;
+  setFile: (file: FsDirentDto | null) => void;
+};
+
+export const useLightboxStore = create<LightboxStore>((set) => ({
+  file: null,
+  setFile: (file) => set(() => ({ file })),
 }));
