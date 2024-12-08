@@ -147,7 +147,10 @@ export class Uploader extends EventTarget {
         });
       }
 
-      const transferFile = Array.from(this.#poolMap.values()).find((f) => f.status === 'waiting');
+      let transferFile = Array.from(this.#poolMap.values()).find((f) => f.status === 'waiting');
+      if (!transferFile) {
+        transferFile = await this.#retry(() => Array.from(this.#poolMap.values()).find((f) => f.status === 'waiting'));
+      }
       if (!transferFile) {
         break;
       }
@@ -168,16 +171,25 @@ export class Uploader extends EventTarget {
         });
       }
 
-      const index = Math.floor(Math.random() * this.#filePool.size);
-      const transferFile = Array.from(this.#filePool)[index];
-      if (!transferFile) {
+      // 检查文件池
+      let filePoolSize = this.#filePool.size;
+      if (!filePoolSize) {
+        filePoolSize = (await this.#retry(() => this.#filePool.size)) || 0;
+      }
+      if (!filePoolSize) {
         break;
       }
 
+      // 从文件池中随机选择一个文件
+      const index = Math.floor(Math.random() * filePoolSize);
+      const transferFile = Array.from(this.#filePool)[index];
+
+      // 读取文件的一个分片
       const start = transferFile.chunkIndex * this.#chunkSize;
       const end = (transferFile.chunkIndex + 1) * this.#chunkSize;
       const chunk = transferFile.file.slice(start, end);
 
+      // 将分片放入分片池
       this.#chunkPool.push({
         id: transferFile.id,
         name: transferFile.file.name,
@@ -205,12 +217,14 @@ export class Uploader extends EventTarget {
         });
       }
 
-      const chunk = this.#chunkPool.shift();
+      let chunk = this.#chunkPool.shift();
       this.#chunkPoolTrigger?.();
       this.#chunkPoolTrigger = null;
       if (!chunk) {
-        break;
+        chunk = await this.#retry(() => this.#chunkPool.shift());
       }
+
+      if (!chunk) break;
 
       const id = Uploader.uuid();
       const promise = httpUploadRequest(chunk).finally(() => {
@@ -234,6 +248,17 @@ export class Uploader extends EventTarget {
     this.off(events.update);
     this.off(events.close);
     this.dispatchEvent(new CustomEvent(events.close));
+  }
+  
+  async #retry<T>(fn: () => T, times = 100): Promise<T | undefined> {
+    let result: T | undefined;
+    let i = 0;
+    while (!result && i < times) {
+      await new Promise<void>((resolve) => setTimeout(resolve, 10));
+      result = fn();
+      i++;
+    }
+    return result;
   }
 
   static uuid(): string {
