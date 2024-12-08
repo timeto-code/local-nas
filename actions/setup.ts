@@ -30,7 +30,28 @@ export const hostInfo = async () => {
 
 export const loadConfig = async () => {
   try {
-    const data = await fs.promises.readFile(path.join(process.cwd(), 'config.json'), 'utf8');
+    const configPath = path.join(
+      process.cwd(),
+      process.env.NODE_ENV === 'production' ? 'config.json' : 'config.dev.json',
+    );
+
+    if (!fs.existsSync(configPath)) {
+      logger.error('配置文件不存在！');
+      return null;
+    }
+
+    const data = await fs.promises.readFile(configPath, 'utf8');
+    const config = JSON.parse(data) as Config;
+    if (!config) {
+      logger.error('配置文件解析失败！');
+      return null;
+    }
+
+    if (!config.server_protocol || !config.server_host || !config.server_port || !config.log_path) {
+      logger.error('配置文件参数缺失！');
+      return null;
+    }
+
     return JSON.parse(data);
   } catch (error) {
     logger.error(error);

@@ -203,7 +203,14 @@ const ListRow = ({ file }: Props) => {
                 <Icons name={file.name} size={20} />
               </div>
               <button className="truncate" onClick={handlePlay}>
-                {file.name}
+                <a
+                  href={file.playUrl}
+                  onClick={(e) => {
+                    e.preventDefault();
+                  }}
+                >
+                  {file.name}
+                </a>
               </button>
             </div>
             <div className="flex w-20 items-center justify-end overflow-hidden md:w-44 lg:w-[40%]">

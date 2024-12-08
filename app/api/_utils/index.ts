@@ -41,6 +41,10 @@ class Logger {
 
   // Log error messages
   async error<T>(error: T) {
+    if (process.env.NODE_ENV === 'development') {
+      return this.debug(error);
+    }
+
     await this.writeLog('error.log', `${error}`);
   }
 

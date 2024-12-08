@@ -44,12 +44,12 @@ const Lightbox = () => {
         </button>
         <div className="relative h-full w-full">
           {file.category === FileCategory.Image && (
-            <Image src={file.playUrl} alt={file.name} className="object-contain" fill />
+            <Image src={file.playUrl} alt={file.name} className="object-contain" fill unoptimized />
           )}
 
           {file.category === FileCategory.Video && (
             <div className="flex h-full items-center justify-center">
-              <video className="rounded-md" src={file.playUrl} controls />
+              <video className="rounded-md" src={file.playUrl} controls preload="auto" />
             </div>
           )}
 
