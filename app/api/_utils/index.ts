@@ -1,55 +1,57 @@
 import fs from 'fs';
-import { NextResponse } from 'next/server';
 import path from 'path';
+import config from '@/config.json';
 
-import { FileDto } from '@/dtos';
+class Logger {
+  logPath: string;
 
-export const msg = {
-  success: 'success',
-  invalidParameters: 'Invalid parameters',
-  invalidBody: 'Invalid body',
-  notFound: 'Not found',
-  serverError: 'Server error',
-} as const;
-
-export class Logger {
-  static error<T>(error: T) {
-    console.log(`\u001b[31m${new Date().toLocaleTimeString()} [ERROR]\u001b[0m`, error);
+  constructor() {
+    this.logPath = path.join(config.log_path);
+    this.createLogDirectory();
   }
 
-  static debug<T>(msg: T) {
-    console.log(`\u001b[32m${new Date().toLocaleTimeString()} [DEBUG]\u001b[0m`, msg);
+  // Ensure the log directory exists
+  private async createLogDirectory() {
+    try {
+      await fs.promises.mkdir(this.logPath, { recursive: true });
+    } catch (err) {
+      console.error('Failed to create log directory:', err);
+    }
+  }
+
+  // Generalized log writing method
+  private async writeLog(filename: string, message: string) {
+    const logFilePath = path.join(this.logPath, filename);
+    try {
+      await fs.promises.appendFile(
+        logFilePath,
+        `[${new Date().toLocaleDateString('zh-CN', {
+          year: 'numeric',
+          month: '2-digit',
+          day: '2-digit',
+          hour: '2-digit',
+          minute: '2-digit',
+          second: '2-digit',
+        })}] - ${message}\n`,
+      );
+    } catch (err) {
+      console.error(`Failed to write to ${filename}:`, err);
+    }
+  }
+
+  // Log error messages
+  async error<T>(error: T) {
+    if (process.env.NODE_ENV === 'development') {
+      return this.debug(error);
+    }
+
+    await this.writeLog('error.log', `${error}`);
+  }
+
+  // Log debug messages
+  async debug<T>(msg: T) {
+    if (process.env.NODE_ENV === 'development') console.log('\x1b[36m%s\x1b[0m', msg);
   }
 }
 
-const shared = process.env.SHARED_FOLDER_PATH || path.join(process.cwd(), 'shared');
-export const directory = {
-  shared,
-  temp: path.join(shared, 'temp'),
-};
-
-/**
- * 目标目录下生成唯一的文件名。如果文件名已存在，添加 (n) 编号。
- *
- * @param {string} dirPath 目录绝对路径
- * @param {string} fileName 文件名
- */
-export const generateUniquePath = (dirPath: string, fileName: string) => {
-  let counter = 1;
-  let uniqueFilePath = path.join(dirPath, fileName);
-
-  while (fs.existsSync(uniqueFilePath)) {
-    const ext = fileName.slice(fileName.lastIndexOf('.'));
-    const baseName = fileName.slice(0, fileName.lastIndexOf('.'));
-    uniqueFilePath = path.join(dirPath, `${baseName} (${counter})${ext}`);
-    counter++;
-  }
-
-  return uniqueFilePath;
-};
-
-export type ApiSerializableResponse<T> = { code: 0 | 1; message: T | string | FileDto[] };
-
-export const createJsonResponse = <T>({ code, message }: ApiSerializableResponse<T>) => {
-  return NextResponse.json({ code, message });
-};
+export const logger = new Logger();

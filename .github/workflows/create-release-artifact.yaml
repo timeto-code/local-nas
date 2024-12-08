@@ -30,8 +30,8 @@ jobs:
       - name: clean and pack artifacts
         run: |
           VERSION=$(echo "${{ github.ref }}" | sed 's/refs\/tags\/v//') 
-          tar -czf app-${VERSION}.tgz .next public shared package.json package-lock.json README.md
-          zip -r app-${VERSION}.zip .next public shared package.json package-lock.json README.md
+          tar -czf app-${VERSION}.tgz .next .env config.json pm2.cjs public package.json package-lock.json README.md
+          zip -r app-${VERSION}.zip .next .env config.json pm2.cjs public package.json package-lock.json README.md
           echo "VERSION=$VERSION" >> $GITHUB_ENV
 
       - uses: actions/create-release@v1

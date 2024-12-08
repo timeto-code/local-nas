@@ -26,7 +26,8 @@ yarn-debug.log*
 yarn-error.log*
 
 # local env files
-.env
+.env.development
+config.dev.json
 
 # vercel
 .vercel
@@ -35,6 +36,4 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-# 共享文件夹
-shared/*
-!shared/.gitkeep
+/logs
