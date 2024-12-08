@@ -10,5 +10,5 @@ export const bytesToSize = (bytes: number): string => {
 };
 
 export const toast = (title: string, content: string) => {
-  useToastStore.getState().setToast(title, content);
+  useToastStore.setState({ toastId: Date.now(), title, content });
 };
