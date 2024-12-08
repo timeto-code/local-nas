@@ -42,7 +42,6 @@ const Toast = () => {
     return () => {
       if (showTimerId) clearTimeout(showTimerId);
       if (animateTimerId) clearTimeout(animateTimerId);
-
       useToastStore.setState({ toastId: 0 });
     };
   }, [showTimerId, animateTimerId]);

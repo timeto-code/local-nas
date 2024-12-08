@@ -200,8 +200,6 @@ export class Uploader extends EventTarget {
       if (end < transferFile.file.size) {
         transferFile.chunkIndex++;
       } else {
-        console.log('file done', transferFile.file.name);
-
         this.#filePool.delete(transferFile);
         this.#fillPoolTrigger?.();
         this.#fillPoolTrigger = null;
@@ -251,7 +249,7 @@ export class Uploader extends EventTarget {
     this.off(events.close);
     this.dispatchEvent(new CustomEvent(events.close));
   }
-
+  
   async #retry<T>(fn: () => T, times = 100): Promise<T | undefined> {
     let result: T | undefined;
     let i = 0;

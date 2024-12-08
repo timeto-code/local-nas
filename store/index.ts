@@ -1,40 +1,9 @@
 import { FileCategory, fileType, FsDirentDto } from '@/types/FsDirentDto';
 import { create } from 'zustand';
 
-// export const category = {
-//   all: 'all',
-//   document: 'document',
-//   image: 'image',
-//   video: 'video',
-//   audio: 'audio',
-//   zip: 'zip',
-//   installer: 'installer',
-// } as const;
-// export type FileCategory = (typeof category)[keyof typeof category];
-
-// export const fileType = {
-//   [category.all]: [''],
-//   [category.document]: ['doc', 'docx', 'ppt', 'pptx', 'xls', 'xlsx', 'pdf', 'txt'],
-//   [category.image]: ['png', 'jpg', 'jpeg', 'gif', 'webp', 'bmp', 'ico'],
-//   [category.video]: ['mp4', 'avi', 'mov', 'mkv', 'flv', 'wmv', 'rmvb'],
-//   [category.audio]: ['mp3', 'wav', 'flac', 'ape', 'aac', 'ogg', 'm4a'],
-//   [category.zip]: ['zip', 'rar', '7z', 'tar', 'gz'],
-//   [category.installer]: ['exe', 'dmg', 'pkg'],
-// };
-
-// export function getCategoryByType(type: string): FileCategory | null {
-//   for (const [key, extensions] of Object.entries(fileType)) {
-//     if (extensions.includes(type)) {
-//       return key as FileCategory;
-//     }
-//   }
-//   return null;
-// }
-
 type CommonStore = {
   isUploading: boolean;
   setIsUploading: (isUploading: boolean) => void;
-
   playFile: FsDirentDto | null;
   setPlayFile: (file: FsDirentDto | null) => void;
 };
@@ -42,7 +11,6 @@ type CommonStore = {
 export const useCommonStore = create<CommonStore>((set) => ({
   isUploading: false,
   setIsUploading: (isUploading) => set(() => ({ isUploading })),
-
   playFile: null,
   setPlayFile: (file) => set(() => ({ playFile: file })),
 }));
