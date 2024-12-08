@@ -2,6 +2,7 @@
 
 import { useContext, useEffect, useState } from 'react';
 
+import Circle from '@/components/Spinner';
 import { ConfigContext } from '@/contexts';
 import { useFileListStore, useSearchFileStore } from '@/store';
 import { fetchFileList } from '../_api';
@@ -23,8 +24,8 @@ const FileList = () => {
 
   if (loading) {
     return (
-      <div className="mt-20 text-center">
-        <p className="font-black tracking-widest opacity-30">加载中...</p>
+      <div className="mt-20 flex items-center justify-center">
+        <Circle radius={10} storkWidth={3} />
       </div>
     );
   }

@@ -163,3 +163,13 @@ export const useFileListStore = create<FileListStore>((set) => ({
       return { files };
     }),
 }));
+
+type LightboxStore = {
+  file: FsDirentDto | null;
+  setFile: (file: FsDirentDto | null) => void;
+};
+
+export const useLightboxStore = create<LightboxStore>((set) => ({
+  file: null,
+  setFile: (file) => set(() => ({ file })),
+}));

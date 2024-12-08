@@ -7,12 +7,11 @@ import { IoMdMore } from 'react-icons/io';
 import { LiaSpinnerSolid } from 'react-icons/lia';
 import { LuDownload } from 'react-icons/lu';
 
-import { bytesToSize } from '@/lib/utils';
-import { useDeleteFileStore, useFileListStore, useRowStore } from '@/store';
-import { FsDirentDto } from '@/types/FsDirentDto';
-import { useRouter } from 'next/navigation';
-import { downloadFileByName } from '../_api';
 import Icons from '@/components/Icons';
+import { bytesToSize } from '@/lib/utils';
+import { useDeleteFileStore, useFileListStore, useLightboxStore, useRowStore } from '@/store';
+import { FsDirentDto } from '@/types/FsDirentDto';
+import { downloadFileByName } from '../_api';
 
 const ListHeader = () => {
   const [animateColumn, setAnimateColumn] = useState(false);
@@ -120,7 +119,6 @@ interface Props {
 }
 
 const ListRow = ({ file }: Props) => {
-  const router = useRouter();
   const [animateColumn, setAnimateColumn] = useState(false);
   const [showMenu, setShowMenu] = useState(false);
   const [visible, setVisible] = useState(true);
@@ -166,8 +164,7 @@ const ListRow = ({ file }: Props) => {
   }, []);
 
   const handlePlay = () => {
-    sessionStorage.setItem('file', JSON.stringify(file));
-    router.push(`/finder/preview/${file.name}`);
+    useLightboxStore.getState().setFile(file);
   };
 
   const handleDownload = (e: React.MouseEvent<HTMLButtonElement>) => {

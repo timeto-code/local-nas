@@ -5,6 +5,7 @@ import Progress from '@/app/(main)/finder/_components/ProgressDrawer';
 import SearchBar from '@/app/(main)/finder/_components/SearchBar';
 import Toast from '@/components/Toast';
 import ContextProvider from './_components/ContextProvider';
+import Lightbox from './_components/Lightbox';
 
 const page = async () => {
   return (
@@ -26,6 +27,7 @@ const page = async () => {
         <Progress />
         <Confirmation />
         <Toast />
+        <Lightbox />
       </div>
     </ContextProvider>
   );
