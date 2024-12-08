@@ -3,7 +3,7 @@ import fs from 'fs';
 import net from 'net';
 import path from 'path';
 
-const PORT = 80;
+const PORT = 3001;
 const currentRepoPath = process.cwd();
 const newRepoPath = path.resolve(currentRepoPath, '..', `${path.basename(currentRepoPath)}-test`);
 
@@ -36,16 +36,13 @@ async function setup() {
 
     if (fs.existsSync(newRepoPath)) {
       debug(`Removing existing directory: ${newRepoPath}`);
-      child_process.execSync(`npx kill-port ${PORT}`, { stdio: 'inherit' });
+      child_process.execSync(`npx kill-port 3001`, { stdio: 'inherit' });
       fs.rmSync(newRepoPath, { recursive: true });
     }
 
     debug(`Cloning repository into: ${newRepoPath}`);
     await execCommand(`git clone --branch ${currentBranch} --single-branch ${currentRepoPath} ${newRepoPath}`);
 
-    debug(`Copy config file to new repository`);
-    await fs.promises.copyFile(path.join(currentRepoPath, 'config.dev.json'), path.join(newRepoPath, 'config.json'));
-    
     process.chdir(newRepoPath);
 
     debug('Removing origin remote');
@@ -72,7 +69,7 @@ function waitForPort(port: number, timeout = 30000) {
     const interval = setInterval(() => {
       const client = new net.Socket();
       client
-        .connect(port, 'localhost', () => {
+        .connect(port, '127.0.0.1', () => {
           clearInterval(interval);
           client.destroy();
           resolve();
@@ -95,13 +92,13 @@ function startServer() {
     detached: true,
   });
 
-  startProcess.unref();
+  startProcess.unref(); // 分离进程，确保主进程可退出
 
   debug('Waiting for server to be ready');
   waitForPort(PORT)
     .then(() => {
       debug(`Server is running. Opening browser at http://localhost:${PORT}/`);
-      child_process.exec(`start http://localhost:${PORT}/`);
+      child_process.exec('start http://localhost:3001/');
     })
     .catch((error) => {
       errorLog(`Failed to start server: ${error.message}`);
