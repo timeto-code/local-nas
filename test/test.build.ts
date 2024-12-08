@@ -44,8 +44,8 @@ async function setup() {
     await execCommand(`git clone --branch ${currentBranch} --single-branch ${currentRepoPath} ${newRepoPath}`);
 
     debug(`Copy config file to new repository`);
-    await fs.promises.copyFile(path.join(currentRepoPath, 'config.dev.json'), path.join(newRepoPath, 'config.json'));
-    
+    fs.promises.copyFile(path.join(currentRepoPath, 'config.dev.json'), path.join(newRepoPath, 'config.json'));
+
     process.chdir(newRepoPath);
 
     debug('Removing origin remote');
